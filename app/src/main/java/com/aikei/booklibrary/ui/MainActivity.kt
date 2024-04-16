@@ -1,4 +1,4 @@
-package com.aikei.booklibrary
+package com.aikei.booklibrary.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
