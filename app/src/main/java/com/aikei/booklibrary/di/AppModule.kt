@@ -38,7 +38,7 @@ object AppModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")  // Change this to your actual API URL
+            .baseUrl("http://192.168.0.14:8000/api/")  // Your development machine's IP
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

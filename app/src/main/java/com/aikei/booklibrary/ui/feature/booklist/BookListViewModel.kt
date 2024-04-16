@@ -24,12 +24,9 @@ class BookListViewModel @Inject constructor(private val repository: BookReposito
     private fun loadBooks() {
         viewModelScope.launch {
             _books.emit(Resource.Loading())
-            try {
-                val loadedBooks = repository.getBooks()
-                _books.emit(Resource.Success(data = loadedBooks))
-            } catch (e: Exception) {
-                _books.emit(Resource.Error(message = e.message ?: "Unknown error"))
-            }
+            val result = repository.getBooks()
+            _books.emit(result)
         }
     }
+
 }
