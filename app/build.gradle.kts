@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
@@ -12,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.aikei.booklibrary"
-        minSdk = 21
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -102,16 +101,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.wear.compose:compose-material:1.3.0")
-
-    // Firebase dependencies
-    implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("com.google.firebase:firebase-database:20.3.1")
-    implementation("com.google.firebase:firebase-firestore:24.11.0")
-    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-    implementation("com.google.firebase:firebase-appcheck-debug")
-    // Firebase App Check for debug builds
-    //implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2") // Firebase App Check for Play Integrity, commented as it might not be needed for all builds
 
     // Image loading library for Compose
     implementation("io.coil-kt:coil-compose:2.4.0")

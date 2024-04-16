@@ -1,4 +1,7 @@
 package com.aikei.booklibrary.data.model
 
-class User {
-}
+data class User(
+    val id: Int,
+    val username: String,
+    val email: String
+)

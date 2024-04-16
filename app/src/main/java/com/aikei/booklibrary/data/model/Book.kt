@@ -1,4 +1,9 @@
 package com.aikei.booklibrary.data.model
 
-class Book {
-}
+data class Book(
+    val id: Int,
+    val title: String,
+    val author: String,
+    val synopsis: String,
+    val publishDate: String
+)
