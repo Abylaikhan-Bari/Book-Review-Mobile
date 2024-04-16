@@ -1,6 +1,8 @@
 package com.aikei.booklibrary.data.remote
 
 import com.aikei.booklibrary.data.model.Book
+import com.aikei.booklibrary.data.model.RegistrationRequest
+import com.aikei.booklibrary.data.model.RegistrationResponse
 import com.aikei.booklibrary.data.model.User
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -14,6 +16,8 @@ interface ApiService {
     @FormUrlEncoded
     @POST("login/")
     suspend fun login(@Field("username") username: String, @Field("password") password: String): Response<User>
+    @POST("dj-rest-auth/registration/")
+    suspend fun register(@Body registrationData: RegistrationRequest): Response<RegistrationResponse>
 
     @GET("books/")
     suspend fun listBooks(): Response<List<Book>>
