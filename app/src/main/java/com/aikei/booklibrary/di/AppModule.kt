@@ -1,6 +1,7 @@
 package com.aikei.booklibrary.di
 
 import com.aikei.booklibrary.data.remote.ApiService
+import com.aikei.booklibrary.data.repository.BookRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,7 +39,7 @@ object AppModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://192.168.0.14:8000/api/")  // Your development machine's IP
+            .baseUrl("http://192.168.0.10:8000/api/")  // Your development machine's IP
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -48,6 +49,9 @@ object AppModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService =
         retrofit.create(ApiService::class.java)
+
+    @Provides
+    fun provideBookRepository(apiService: ApiService): BookRepository = BookRepository(apiService)
 
     // Add other app-wide provided dependencies here
 }
