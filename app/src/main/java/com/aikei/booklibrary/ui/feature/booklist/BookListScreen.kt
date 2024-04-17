@@ -7,13 +7,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
+import com.aikei.booklibrary.ui.feature.login.LoginViewModel
 
 @Composable
-fun BookListScreen(viewModel: BookListViewModel = viewModel()) {
-    val bookResource by viewModel.books.collectAsState()
+fun BookListScreen(navController: NavController) {
+    val bookListViewModel: BookListViewModel = hiltViewModel()
+
+    val bookResource by bookListViewModel.books.collectAsState()
 
     when (bookResource) {
         is Resource.Loading<*> -> Text("Loading...")

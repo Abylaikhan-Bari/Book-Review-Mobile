@@ -9,11 +9,11 @@ import javax.inject.Inject
 
 class UserRepository @Inject constructor(private val apiService: ApiService) {
     suspend fun authenticate(username: String, password: String): User {
-        val response = apiService.login(username, password)  // Ensure the login method exists
+        val response = apiService.login(username, password)
         if (response.isSuccessful) {
-            return response.body() ?: throw Exception("Invalid login")
+            return response.body() ?: throw Exception("Invalid login: No user data")
         } else {
-            throw Exception("Network error")
+            throw Exception("Network error: ${response.code()} - ${response.message()}")
         }
     }
 

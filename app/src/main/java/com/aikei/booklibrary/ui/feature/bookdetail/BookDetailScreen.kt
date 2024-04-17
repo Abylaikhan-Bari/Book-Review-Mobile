@@ -5,16 +5,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun BookDetailScreen(bookId: Int, viewModel: BookDetailViewModel = viewModel()) {
+fun BookDetailScreen(bookId: Int) {
+
+    val bookDetailViewModel: BookDetailViewModel = hiltViewModel()
+
     // Assume loadBook() is triggered externally or here directly
     LaunchedEffect(bookId) {
-        viewModel.loadBook(bookId)
+        bookDetailViewModel.loadBook(bookId)
     }
 
-    val book = viewModel.book.collectAsState().value
+    val book = bookDetailViewModel.book.collectAsState().value
 
     Column {
         Text("Title: ${book.title}")

@@ -14,17 +14,19 @@ import retrofit2.http.Path
 
 interface ApiService {
     @FormUrlEncoded
-    @POST("login/")
+    @POST("auth/login/") // Updated path to target the login endpoint under the /auth/ base URL
     suspend fun login(@Field("username") username: String, @Field("password") password: String): Response<User>
-    @POST("dj-rest-auth/registration/")
+
+    @POST("auth/registration/") // Updated path to target the registration endpoint under the /auth/ base URL
     suspend fun register(@Body registrationData: RegistrationRequest): Response<RegistrationResponse>
 
-    @GET("books/")
+    @GET("api/books/") // Updated path to target the listBooks endpoint under the /api/ base URL
     suspend fun listBooks(): Response<List<Book>>
 
-    @GET("books/{id}/")
+    @GET("api/books/{id}/") // Updated path to target the getBookById endpoint under the /api/ base URL
     suspend fun getBookById(@Path("id") bookId: Int): Response<Book>
 
-    @POST("books/")
+    @POST("api/books/") // Updated path to target the addBook endpoint under the /api/ base URL
     suspend fun addBook(@Body book: Book): Response<Book>
 }
+

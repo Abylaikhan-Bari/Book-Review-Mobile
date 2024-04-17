@@ -12,11 +12,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.aikei.booklibrary.ui.feature.booklist.BookListViewModel
 
 @Composable
-fun RegistrationScreen(viewModel: RegistrationViewModel = viewModel()) {
+fun RegistrationScreen(navController: NavController) {
+    val registrationViewModel: RegistrationViewModel = hiltViewModel()
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -67,8 +71,9 @@ fun RegistrationScreen(viewModel: RegistrationViewModel = viewModel()) {
                         errorMessage = "Passwords do not match"
                     }
                     else -> {
-                        viewModel.register(username, email, password, confirmPassword)
+                        registrationViewModel.register(username, email, password, confirmPassword)
                         errorMessage = null // Reset error message
+                        navController.navigate("bookList")
                     }
                 }
             },

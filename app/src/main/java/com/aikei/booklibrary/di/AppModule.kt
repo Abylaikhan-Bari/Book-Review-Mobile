@@ -2,9 +2,11 @@ package com.aikei.booklibrary.di
 
 import com.aikei.booklibrary.data.remote.ApiService
 import com.aikei.booklibrary.data.repository.BookRepository
+import com.aikei.booklibrary.data.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -39,11 +41,10 @@ object AppModule {
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://192.168.0.10:8000/api/")  // Your development machine's IP
+            .baseUrl("http://192.168.0.10:8000/")  // Your development machine's IP
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
 
     @Provides
     @Singleton
@@ -51,7 +52,17 @@ object AppModule {
         retrofit.create(ApiService::class.java)
 
     @Provides
-    fun provideBookRepository(apiService: ApiService): BookRepository = BookRepository(apiService)
+    @Singleton
+    fun provideBookRepository(apiService: ApiService): BookRepository =
+        BookRepository(apiService)
 
-    // Add other app-wide provided dependencies here
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+object ViewModelModule {
+    @Provides
+    fun provideUserRepository(apiService: ApiService): UserRepository {
+        return UserRepository(apiService)
+    }
 }
