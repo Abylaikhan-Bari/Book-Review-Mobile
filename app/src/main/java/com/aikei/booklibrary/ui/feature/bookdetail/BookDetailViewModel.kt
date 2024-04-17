@@ -2,6 +2,7 @@ package com.aikei.booklibrary.ui.feature.bookdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
 import com.aikei.booklibrary.data.repository.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,12 +13,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookDetailViewModel @Inject constructor(private val repository: BookRepository) : ViewModel() {
-    private val _book = MutableStateFlow(Book(0, "", "", "", ""))
-    val book: StateFlow<Book> = _book
+    private val _book = MutableStateFlow<Resource<Book>>(Resource.Loading())
+    val book: StateFlow<Resource<Book>> = _book
 
-    fun loadBook(bookId: Int) {
+    // Update the loadBook function to accept the token as well
+    fun loadBook(token: String, bookId: String) {
         viewModelScope.launch {
-            _book.value = repository.getBookById(bookId)  // Ensure this function exists in BookRepository
+            _book.value = Resource.Loading()
+            val result = repository.getBookById(token, bookId.toInt()) // Convert bookId to Int
+            _book.value = result
         }
     }
 }

@@ -6,23 +6,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aikei.booklibrary.data.Resource
+import com.aikei.booklibrary.data.model.Book
 
 @Composable
-fun BookDetailScreen(bookId: Int) {
-
+fun BookDetailScreen(token: String, bookId: String) {
     val bookDetailViewModel: BookDetailViewModel = hiltViewModel()
 
-    // Assume loadBook() is triggered externally or here directly
     LaunchedEffect(bookId) {
-        bookDetailViewModel.loadBook(bookId)
+        bookDetailViewModel.loadBook(token, bookId)
     }
 
-    val book = bookDetailViewModel.book.collectAsState().value
+    val bookResource = bookDetailViewModel.book.collectAsState().value
 
     Column {
-        Text("Title: ${book.title}")
-        Text("Author: ${book.author}")
-        Text("Synopsis: ${book.synopsis}")
+        when (bookResource) {
+            is Resource.Success -> {
+                val book = bookResource.data
+                Text("Title: ${book?.title ?: "Unknown"}")
+                Text("Author: ${book?.author ?: "Unknown"}")
+                Text("Synopsis: ${book?.synopsis ?: "Unknown"}")
+            }
+            is Resource.Loading -> {
+                Text("Loading...")
+            }
+            is Resource.Error -> {
+                Text("Error: ${bookResource.message ?: "Unknown error"}")
+            }
+        }
     }
 }

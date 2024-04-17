@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookListViewModel @Inject constructor(private val repository: BookRepository) : ViewModel() {
     private val _books = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val books: StateFlow<Resource<List<Book>>> = _books.asStateFlow()
+    val books: StateFlow<Resource<List<Book>>> = _books
 
     init {
         loadBooks()
@@ -23,10 +23,9 @@ class BookListViewModel @Inject constructor(private val repository: BookReposito
 
     private fun loadBooks() {
         viewModelScope.launch {
-            _books.emit(Resource.Loading())
-            val result = repository.getBooks()
-            _books.emit(result)
+            _books.value = Resource.Loading()
+            val result = repository.getBooks("your_token_here") // Pass the token here
+            _books.value = result
         }
     }
-
 }

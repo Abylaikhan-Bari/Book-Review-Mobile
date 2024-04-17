@@ -8,9 +8,9 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class BookRepository @Inject constructor(private val apiService: ApiService) {
-    suspend fun getBooks(): Resource<List<Book>> {
+    suspend fun getBooks(token: String): Resource<List<Book>> {
         return try {
-            val response = apiService.listBooks()
+            val response = apiService.listBooks(token)
             if (response.isSuccessful) {
                 Resource.Success(data = response.body() ?: emptyList())
             } else {
@@ -21,12 +21,16 @@ class BookRepository @Inject constructor(private val apiService: ApiService) {
         }
     }
 
-    suspend fun getBookById(bookId: Int): Book {
-        val response = apiService.getBookById(bookId)
-        if (response.isSuccessful) {
-            return response.body() ?: throw IllegalStateException("No book found with ID: $bookId")
-        } else {
-            throw Exception("Failed to fetch book: ${response.errorBody()?.string()}")
+    suspend fun getBookById(token: String, bookId: Int): Resource<Book> {
+        return try {
+            val response = apiService.getBookById(token, bookId)
+            if (response.isSuccessful) {
+                Resource.Success(data = response.body() ?: throw IllegalStateException("No book found with ID: $bookId"))
+            } else {
+                Resource.Error(message = "Failed to fetch book: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Resource.Error(message = e.message ?: "Unknown error")
         }
     }
 }

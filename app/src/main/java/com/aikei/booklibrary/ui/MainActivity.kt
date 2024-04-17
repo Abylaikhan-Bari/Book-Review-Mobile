@@ -36,8 +36,16 @@ fun BookLibraryApp() {
                 composable("login") { LoginScreen(navController) }
                 composable("register") { RegistrationScreen(navController) }
                 composable("bookList") { BookListScreen(navController) }
-                composable("bookDetail/{bookId}", arguments = listOf(navArgument("bookId") { type = NavType.IntType })) { backStackEntry ->
-                    BookDetailScreen(backStackEntry.arguments?.getInt("bookId") ?: 0)
+                composable(
+                    "bookDetail/{token}/{bookId}",
+                    arguments = listOf(
+                        navArgument("token") { type = NavType.StringType },
+                        navArgument("bookId") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val token = backStackEntry.arguments?.getString("token") ?: ""
+                    val bookId = backStackEntry.arguments?.getString("bookId") ?: ""
+                    BookDetailScreen(token, bookId)
                 }
             }
         }

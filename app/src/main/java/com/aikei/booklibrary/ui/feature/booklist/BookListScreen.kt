@@ -1,18 +1,18 @@
 package com.aikei.booklibrary.ui.feature.booklist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
-import com.aikei.booklibrary.ui.feature.login.LoginViewModel
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
 
 @Composable
 fun BookListScreen(navController: NavController) {
@@ -25,7 +25,10 @@ fun BookListScreen(navController: NavController) {
         is Resource.Success<*> -> {
             LazyColumn {
                 items((bookResource as Resource.Success<List<Book>>).data) { book ->
-                    BookItem(book)
+                    BookItem(book) {
+                        // Navigate to BookDetailScreen when a book item is clicked
+                        navController.navigate("bookDetail/${book.id}")
+                    }
                 }
             }
         }
@@ -35,9 +38,14 @@ fun BookListScreen(navController: NavController) {
 
 
 @Composable
-fun BookItem(book: Book) {
+fun BookItem(book: Book, onItemClick: () -> Unit) {
     Column {
         Text("Title: ${book.title}")
         Text("Author: ${book.author}")
+        // Use clickable modifier to make the item clickable
+        Text(
+            "Click to view details",
+            modifier = Modifier.clickable(onClick = onItemClick)
+        )
     }
 }
