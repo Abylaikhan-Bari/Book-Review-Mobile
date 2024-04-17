@@ -19,6 +19,10 @@ interface ApiService {
     @POST("auth/login/")
     suspend fun login(@Field("username") username: String, @Field("password") password: String): Response<User>
 
+    @FormUrlEncoded
+    @POST("auth/login/")
+    suspend fun loginWithToken(@Field("username") username: String, @Field("password") password: String, @Header("Authorization") token: String): Response<User>
+
     @POST("auth/registration/")
     suspend fun register(@Body registrationData: RegistrationRequest): Response<RegistrationResponse>
 
@@ -31,5 +35,3 @@ interface ApiService {
     @POST("api/books/")
     suspend fun addBook(@Header("Authorization") token: String, @Body book: Book): Response<Book>
 }
-
-
