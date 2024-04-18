@@ -30,4 +30,13 @@ class BookRepository @Inject constructor(private val apiService: ApiService) {
             Resource.Error(message = e.message ?: "Unknown error")
         }
     }
+
+    suspend fun addBook(token: String, book: Book): Resource<Book> {
+        val response = apiService.addBook("Bearer $token", book)
+        return if (response.isSuccessful) {
+            Resource.Success(data = response.body() ?: throw IllegalStateException("Failed to add the book"))
+        } else {
+            Resource.Error(message = "Failed to add book: ${response.errorBody()?.string()}")
+        }
+    }
 }

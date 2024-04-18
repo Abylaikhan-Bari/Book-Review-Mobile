@@ -24,7 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.aikei.booklibrary.ui.MainViewModel
+import com.aikei.booklibrary.ui.common.MainViewModel
 
 @Composable
 fun BookListScreen(navController: NavController, token: String) {
@@ -43,6 +43,15 @@ fun BookListScreen(navController: NavController, token: String) {
             Text("Go to Settings")
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = { navController.navigate("addBook/$token") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add New Book")
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         when (bookResource) {
@@ -51,7 +60,6 @@ fun BookListScreen(navController: NavController, token: String) {
                 LazyColumn {
                     items((bookResource as Resource.Success<List<Book>>).data) { book ->
                         BookItem(book) {
-                            // Navigate to BookDetailScreen with both token and bookId
                             navController.navigate("bookDetail/$token/${book.id}")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -87,27 +95,4 @@ fun BookItem(book: Book, onItemClick: () -> Unit) {
         }
     }
 }
-@Composable
-fun SettingsScreen(navController: NavController, viewModel: MainViewModel = hiltViewModel()) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        Text(text = "Settings", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-            onClick = {
-                viewModel.signOut()
-                navController.navigate("login") {
-                    popUpTo("bookList") { inclusive = true }  // Adjust this as necessary based on your navigation graph
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Sign Out")
-        }
-        Button(
-            onClick = { navController.navigate("bookList/{token}") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Go to Book list screen")
-        }
-    }
-}
+
