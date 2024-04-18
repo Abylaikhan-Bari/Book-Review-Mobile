@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.aikei.booklibrary.ui.feature.bookdetail.BookDetailScreen
 import com.aikei.booklibrary.ui.feature.booklist.BookListScreen
+import com.aikei.booklibrary.ui.feature.booklist.SettingsScreen
 import com.aikei.booklibrary.ui.feature.register.RegistrationScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,11 +34,16 @@ fun BookLibraryApp() {
     MaterialTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             NavHost(navController = navController, startDestination = "login") {
-                composable("login") { LoginScreen(navController) }
-                composable("register") { RegistrationScreen(navController) }
+                composable("login") {
+                    LoginScreen(navController)
+                }
+                composable("register") {
+                    RegistrationScreen(navController)
+                }
                 composable("bookList/{token}") { backStackEntry ->
-                    val token = backStackEntry.arguments?.getString("token") ?: ""
-                    BookListScreen(navController, token)
+                    backStackEntry.arguments?.getString("token")?.let { token ->
+                        BookListScreen(navController, token)
+                    }
                 }
                 composable(
                     "bookDetail/{token}/{bookId}",
@@ -50,7 +56,12 @@ fun BookLibraryApp() {
                     val bookId = backStackEntry.arguments?.getString("bookId") ?: ""
                     BookDetailScreen(token, bookId)
                 }
+                // Add route for SettingsScreen
+                composable("settings") {
+                    SettingsScreen(navController)
+                }
             }
         }
     }
 }
+

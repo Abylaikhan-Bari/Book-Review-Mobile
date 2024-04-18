@@ -11,4 +11,8 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     var authToken: String?
         get() = prefs.getString("auth_token", null)
         set(value) = prefs.edit().putString("auth_token", value).apply()
+
+    fun clearAuthToken() {
+        prefs.edit().remove("auth_token").apply()
+    }
 }
