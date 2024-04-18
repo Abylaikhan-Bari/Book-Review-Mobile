@@ -12,14 +12,17 @@ import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 
 @Composable
-fun BookListScreen(navController: NavController) {
+fun BookListScreen(navController: NavController, token: String) {
     val bookListViewModel: BookListViewModel = hiltViewModel()
 
     val bookResource by bookListViewModel.books.collectAsState()
-
+    LaunchedEffect(key1 = token) {
+        bookListViewModel.loadBooks(token)
+    }
     when (bookResource) {
         is Resource.Loading<*> -> Text("Loading...")
         is Resource.Success<*> -> {

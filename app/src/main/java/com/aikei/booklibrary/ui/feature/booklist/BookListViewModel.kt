@@ -15,17 +15,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BookListViewModel @Inject constructor(private val repository: BookRepository) : ViewModel() {
     private val _books = MutableStateFlow<Resource<List<Book>>>(Resource.Loading())
-    val books: StateFlow<Resource<List<Book>>> = _books
+    val books: StateFlow<Resource<List<Book>>> = _books.asStateFlow()
 
-    init {
-        loadBooks()
-    }
-
-    private fun loadBooks() {
+    fun loadBooks(token: String) {
         viewModelScope.launch {
-            _books.value = Resource.Loading()
-            val result = repository.getBooks("your_token_here") // Pass the token here
-            _books.value = result
+            _books.emit(Resource.Loading())
+            val result = repository.getBooks("Bearer $token") // Pass the token here
+            _books.emit(result)
         }
     }
 }
+

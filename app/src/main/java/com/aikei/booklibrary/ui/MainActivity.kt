@@ -35,7 +35,10 @@ fun BookLibraryApp() {
             NavHost(navController = navController, startDestination = "login") {
                 composable("login") { LoginScreen(navController) }
                 composable("register") { RegistrationScreen(navController) }
-                composable("bookList") { BookListScreen(navController) }
+                composable("bookList/{token}") { backStackEntry ->
+                    val token = backStackEntry.arguments?.getString("token") ?: ""
+                    BookListScreen(navController, token)
+                }
                 composable(
                     "bookDetail/{token}/{bookId}",
                     arguments = listOf(

@@ -23,50 +23,55 @@ import androidx.navigation.NavController
 import com.aikei.booklibrary.ui.feature.login.LoginViewModel
 
 @Composable
-fun LoginScreen(navController: NavController, token: String? = null) {
+fun LoginScreen(navController: NavController) {
     val loginViewModel: LoginViewModel = hiltViewModel()
     val loginState by loginViewModel.loginState.observeAsState()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    if (token != null) {
-        loginViewModel.setToken(token)
-    }
-
-    when (loginState) {
+    when (val state = loginState) {
         is LoginViewModel.LoginState.Success -> {
-            // If login is successful, navigate to the book list and make sure to clear the login state
-            LaunchedEffect(loginState) {
-                navController.navigate("bookList")
-                loginViewModel.clearLoginState() // You need to implement this to reset the login state
+            LaunchedEffect(state) {
+                // Navigate to bookList and pass the token
+                navController.navigate("bookList/${state.token}")
             }
         }
         is LoginViewModel.LoginState.Error -> {
-            val errorMessage = (loginState as LoginViewModel.LoginState.Error).message
-            // Show error message
+            // Show error message if needed, assuming you have some text to show it
+            Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
         }
-        else -> {
-
+        is LoginViewModel.LoginState.Loading -> {
+            // Optionally show loading indicator
+            Text("Loading...", style = MaterialTheme.typography.bodyMedium)
         }
-        // Handle other states if necessary
+        null -> {
+            // No action needed or you can show default UI
+        }
     }
 
     Column(modifier = Modifier.padding(PaddingValues(16.dp))) {
         Text(text = "Login", style = MaterialTheme.typography.headlineSmall)
-        OutlinedTextField(value = username, onValueChange = { username = it },modifier = Modifier.fillMaxWidth(), label = { Text("Username") })
-        OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Password") })
-        Button(onClick = {
-            loginViewModel.login(username, password)
-        },
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Username") }
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Password") }
+        )
+        Button(
+            onClick = { loginViewModel.login(username, password) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
-            // Navigate to registration screen
-            navController.navigate("register")
-        },
+        Button(
+            onClick = { navController.navigate("register") },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Register")

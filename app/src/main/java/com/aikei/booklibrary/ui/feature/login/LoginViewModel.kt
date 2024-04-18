@@ -6,40 +6,47 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aikei.booklibrary.data.model.User
+import com.aikei.booklibrary.data.repository.ApiException
 import com.aikei.booklibrary.data.repository.UserRepository
+import com.aikei.booklibrary.utils.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: UserRepository,
-                                         private val savedStateHandle: SavedStateHandle
+class LoginViewModel @Inject constructor(
+    private val repository: UserRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
-    private var _loginState = MutableLiveData<LoginState?>()
-    val loginState: MutableLiveData<LoginState?> = _loginState
-    private var token: String? = null
-
-    fun setToken(token: String) {
-        this.token = token
-    }
+    private val _loginState = MutableLiveData<LoginState?>()
+    val loginState: LiveData<LoginState?> = _loginState
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
+            _loginState.value = LoginState.Loading
             try {
-                val user = repository.authenticate(username, password)
-                _loginState.value = LoginState.Success(user)
-            } catch (e: Exception) {
-                _loginState.value = LoginState.Error(e.message)
+                val response = repository.authenticate(username, password)
+                // Assuming your login response includes a token and is mapped to your User model
+                response.token?.let {
+                    sessionManager.authToken = it
+                    _loginState.value = LoginState.Success(it)
+                } ?: run {
+                    _loginState.value = LoginState.Error("Received empty token")
+                }
+            } catch (e: ApiException) {
+                _loginState.value = LoginState.Error(e.message ?: "An unknown error occurred")
             }
         }
-    }
-
-    sealed class LoginState {
-        data class Success(val user: User) : LoginState()
-        data class Error(val message: String?) : LoginState()
     }
 
     fun clearLoginState() {
         _loginState.value = null // Resets the login state to null
     }
+
+    sealed class LoginState {
+        object Loading : LoginState()
+        data class Success(val token: String) : LoginState()
+        data class Error(val message: String) : LoginState()
+    }
 }
+
