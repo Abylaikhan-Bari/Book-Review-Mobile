@@ -103,5 +103,11 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel = hilt
         ) {
             Text("Sign Out")
         }
+        Button(
+            onClick = { navController.navigate("bookList/{token}") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Go to Book list screen")
+        }
     }
 }
