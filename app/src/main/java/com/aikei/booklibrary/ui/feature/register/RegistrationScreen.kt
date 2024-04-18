@@ -81,5 +81,13 @@ fun RegistrationScreen(navController: NavController) {
         ) {
             Text("Register")
         }
+        Button(onClick = {
+            // Navigate to registration screen
+            navController.navigate("login")
+        },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Go to Login")
+        }
     }
 }

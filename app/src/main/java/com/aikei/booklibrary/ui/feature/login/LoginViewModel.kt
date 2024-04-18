@@ -9,9 +9,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
+
+    private var token: String? = null
+
+    fun setToken(token: String) {
+        this.token = token
+    }
+
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            repository.authenticate(username, password)
+            if (token != null) {
+                repository.authenticate(username, password, token!!)
+            } else {
+                repository.authenticate(username, password)
+            }
         }
     }
 }
