@@ -35,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.aikei.booklibrary.ui.common.MainViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,6 +109,7 @@ fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: (B
 @Composable
 fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
@@ -113,16 +117,21 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) ->
             .padding(vertical = 8.dp)
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onLongPress = { showDialog = true }
+                    onLongPress = {
+                        coroutineScope.launch {
+                            delay(500) // Adjust the delay duration as needed
+                            showDialog = true
+                        }
+                    }
                 )
             }
-            .clickable { onItemClick(book) }, // Pass the book to onItemClick
+            .clickable { onItemClick(book) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Title: ${book.title}", style = MaterialTheme.typography.titleMedium)
-            Text("Author: ${book.author}", style = MaterialTheme.typography.bodyMedium)
+            Text(book.title, style = MaterialTheme.typography.titleMedium)
+            Text(book.author, style = MaterialTheme.typography.bodyMedium)
         }
     }
 
@@ -134,7 +143,7 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) ->
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onDeleteConfirm(book) // Pass the book object to onDeleteConfirm
+                        onDeleteConfirm(book)
                         showDialog = false
                     }
                 ) {
