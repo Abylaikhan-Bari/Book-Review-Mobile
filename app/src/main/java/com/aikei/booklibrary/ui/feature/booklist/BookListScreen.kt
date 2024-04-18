@@ -87,7 +87,6 @@ fun BookListScreen(navController: NavController, token: String) {
                         onItemClick = { book ->
                             Log.d("BookListScreen", "Clicked on book: ${book.id}")
                             navController.navigate("bookDetail/$token/${book.id}") },
-                        onDeleteConfirm = { book -> bookListViewModel.confirmDelete(book, token) }
                     )
                     is Resource.Error -> Text("Error: ${books.message}")
                 }
@@ -98,16 +97,16 @@ fun BookListScreen(navController: NavController, token: String) {
 }
 
 @Composable
-fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
+fun BookList(items: List<Book>, onItemClick: (Book) -> Unit) {
     LazyColumn {
         items(items, key = { it.id }) { book ->
-            BookItem(book, onItemClick, onDeleteConfirm)
+            BookItem(book, onItemClick)
         }
     }
 }
 
 @Composable
-fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
+fun BookItem(book: Book, onItemClick: (Book) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -135,26 +134,4 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) ->
         }
     }
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Delete Book") },
-            text = { Text("Are you sure you want to delete '${book.title}'?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDeleteConfirm(book)
-                        showDialog = false
-                    }
-                ) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
 }
