@@ -81,7 +81,7 @@ fun BookListScreen(navController: NavController, token: String) {
                     is Resource.Success -> BookList(
                         items = books.data ?: listOf(),
                         onItemClick = { book -> navController.navigate("bookDetail/$token/${book.id}") },
-                        onDeleteConfirm = { /* Handle delete confirmation here */ }
+                        onDeleteConfirm = { book -> bookListViewModel.confirmDelete(book, token) }
                     )
                     is Resource.Error -> Text("Error: ${books.message}")
                 }
@@ -92,7 +92,7 @@ fun BookListScreen(navController: NavController, token: String) {
 }
 
 @Composable
-fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Unit) {
+fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
     LazyColumn {
         items(items, key = { it.id }) { book ->
             BookItem(book, onItemClick, onDeleteConfirm)
@@ -100,10 +100,8 @@ fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: ()
     }
 }
 
-
-
 @Composable
-fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Unit) {
+fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -114,7 +112,7 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Uni
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onDeleteConfirm() // This is called when the user confirms deletion
+                        onDeleteConfirm(book) // Pass the book object to onDeleteConfirm
                         showDialog = false
                     }
                 ) {
@@ -148,4 +146,3 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Uni
         }
     }
 }
-
