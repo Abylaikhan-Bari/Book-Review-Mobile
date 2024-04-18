@@ -3,11 +3,13 @@ package com.aikei.booklibrary.ui.feature.bookdetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +29,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookDetailScreen(navController: NavController, token: String, bookId: String) {
     val bookDetailViewModel: BookDetailViewModel = hiltViewModel()
-    var showDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(bookId) {
         bookDetailViewModel.loadBook(token, bookId)
@@ -36,39 +39,44 @@ fun BookDetailScreen(navController: NavController, token: String, bookId: String
     val bookResource = bookDetailViewModel.book.collectAsState().value
 
     Column(modifier = Modifier.padding(16.dp)) {
-        when (val bookResult = bookResource) {
+        when (bookResource) {
+            is Resource.Loading -> Text("Loading...")
             is Resource.Success -> {
-                val book = bookResult.data
-                Card(modifier = Modifier.padding(vertical = 8.dp)) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Title: ${book?.title ?: "Unknown"}")
-                        Text("Author: ${book?.author ?: "Unknown"}")
-                        Text("Synopsis: ${book?.synopsis ?: "Unknown"}")
+                bookResource.data?.let { book ->
+                    BookDetailCard(book)
+                    Button(
+                        onClick = { showUpdateDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Update Book")
+                    }
+                    Button(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Delete Book")
                     }
                 }
-
-                Button(
-                    onClick = { showDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Delete Book")
-                }
             }
-            is Resource.Loading -> {
-                Text("Loading...")
-            }
-            is Resource.Error -> {
-                Text("Error: ${bookResult.message ?: "Unknown error"}")
-            }
+            is Resource.Error -> Text("Error: ${bookResource.message ?: "Unknown error"}")
         }
 
-        if (showDialog && bookResource is Resource.Success && bookResource.data != null) {
+        if (showDeleteDialog && bookResource is Resource.Success && bookResource.data != null) {
             DeleteConfirmationDialog(
                 navController = navController,
-                book = bookResource.data!!,
+                book = bookResource.data,
                 token = token,
-                onDismiss = { showDialog = false },
+                onDismiss = { showDeleteDialog = false },
                 viewModel = bookDetailViewModel
+            )
+        }
+
+        if (showUpdateDialog && bookResource is Resource.Success && bookResource.data != null) {
+            UpdateBookDialog(
+                book = bookResource.data,
+                onDismiss = { showUpdateDialog = false },
+                viewModel = bookDetailViewModel,
+                token = token
             )
         }
 
@@ -79,6 +87,52 @@ fun BookDetailScreen(navController: NavController, token: String, bookId: String
             Text("Go to Book List Screen")
         }
     }
+}
+
+@Composable
+fun BookDetailCard(book: Book) {
+    Card(modifier = Modifier.padding(vertical = 8.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Title: ${book.title}")
+            Text("Author: ${book.author}")
+            Text("Synopsis: ${book.synopsis}")
+        }
+    }
+}
+
+@Composable
+fun UpdateBookDialog(book: Book, onDismiss: () -> Unit, viewModel: BookDetailViewModel, token: String) {
+    var title by remember { mutableStateOf(book.title) }
+    var author by remember { mutableStateOf(book.author) }
+    var synopsis by remember { mutableStateOf(book.synopsis) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Update Book") },
+        text = {
+            Column {
+                TextField(value = title, onValueChange = { title = it }, label = { Text("Title") })
+                TextField(value = author, onValueChange = { author = it }, label = { Text("Author") })
+                TextField(value = synopsis, onValueChange = { synopsis = it }, label = { Text("Synopsis") })
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val updatedBook = book.copy(title = title, author = author, synopsis = synopsis)
+                    viewModel.updateBook(token, updatedBook)
+                    onDismiss()
+                }
+            ) {
+                Text("Save Changes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -110,10 +164,4 @@ fun DeleteConfirmationDialog(
             }
         }
     )
-}
-@Composable
-fun CardText(text: String) {
-    Card {
-        Text(text = text)
-    }
 }
