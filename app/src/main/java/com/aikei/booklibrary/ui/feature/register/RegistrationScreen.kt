@@ -20,6 +20,7 @@ import com.aikei.booklibrary.ui.feature.booklist.BookListViewModel
 @Composable
 fun RegistrationScreen(navController: NavController) {
     val registrationViewModel: RegistrationViewModel = hiltViewModel()
+    val registrationState by registrationViewModel.registrationState.collectAsState()
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -30,20 +31,19 @@ fun RegistrationScreen(navController: NavController) {
     Column(modifier = Modifier.padding(PaddingValues(16.dp))) {
         Text(text = "Register", style = MaterialTheme.typography.headlineSmall)
 
+        // Input fields
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text("Username") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -51,7 +51,6 @@ fun RegistrationScreen(navController: NavController) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -60,34 +59,41 @@ fun RegistrationScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (!errorMessage.isNullOrEmpty()) {
-            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
-        }
-
         Button(
             onClick = {
-                when {
-                    password != confirmPassword -> {
-                        errorMessage = "Passwords do not match"
-                    }
-                    else -> {
-                        registrationViewModel.register(username, email, password, confirmPassword)
-                        errorMessage = null // Reset error message
-                        navController.navigate("bookList")
-                    }
+                if (password != confirmPassword) {
+                    errorMessage = "Passwords do not match"
+                } else {
+                    registrationViewModel.register(username, email, password, confirmPassword)
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")
         }
-        Button(onClick = {
-            // Navigate to registration screen
-            navController.navigate("login")
-        },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+
+        Button(onClick = { navController.navigate("login") }) {
             Text("Go to Login")
+        }
+
+        // Error message display
+        if (!errorMessage.isNullOrEmpty()) {
+            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
+        }
+    }
+
+    // Handle navigation after successful registration
+    LaunchedEffect(registrationState) {
+        when (registrationState) {
+            is RegistrationViewModel.RegistrationState.Success -> {
+                navController.navigate("bookList/${(registrationState as RegistrationViewModel.RegistrationState.Success).token}") {
+                    popUpTo("bookList") { inclusive = true }
+                }
+            }
+            is RegistrationViewModel.RegistrationState.Error -> {
+                errorMessage = (registrationState as RegistrationViewModel.RegistrationState.Error).message
+            }
+            else -> {}
         }
     }
 }

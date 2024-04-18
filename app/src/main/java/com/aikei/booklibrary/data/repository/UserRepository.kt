@@ -13,13 +13,8 @@ class UserRepository @Inject constructor(private val apiService: ApiService) {
         return apiService.login(username, password)
     }
 
-    suspend fun register(username: String, email: String, password1: String, password2: String): RegistrationResponse {
-        val response = apiService.register(RegistrationRequest(username, email, password1, password2))
-        if (response.isSuccessful) {
-            return response.body() ?: throw RegistrationException("Invalid registration response")
-        } else {
-            throw ApiException("Network error: ${response.code()} - ${response.errorBody()?.string()}")
-        }
+    suspend fun register(username: String, email: String, password1: String, password2: String): Response<RegistrationResponse> {
+        return apiService.register(RegistrationRequest(username, email, password1, password2))
     }
 }
 
