@@ -32,7 +32,6 @@ fun LoginScreen(navController: NavController) {
     when (val state = loginState) {
         is LoginViewModel.LoginState.Success -> {
             LaunchedEffect(state) {
-                // Navigate to bookList and pass the token
                 navController.navigate("bookList/${state.token}")
             }
         }

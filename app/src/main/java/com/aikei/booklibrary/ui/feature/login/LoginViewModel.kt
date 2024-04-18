@@ -23,18 +23,12 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            _loginState.value = LoginState.Loading
             try {
                 val response = repository.authenticate(username, password)
-                // Assuming your login response includes a token and is mapped to your User model
-                response.token?.let {
-                    sessionManager.authToken = it
-                    _loginState.value = LoginState.Success(it)
-                } ?: run {
-                    _loginState.value = LoginState.Error("Received empty token")
-                }
-            } catch (e: ApiException) {
-                _loginState.value = LoginState.Error(e.message ?: "An unknown error occurred")
+                sessionManager.authToken = response.key // Assuming 'key' is the field in the response
+                _loginState.value = LoginState.Success(response.key)
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error(e.message ?: "Unknown error")
             }
         }
     }

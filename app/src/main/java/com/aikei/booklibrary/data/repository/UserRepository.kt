@@ -11,10 +11,11 @@ class UserRepository @Inject constructor(private val apiService: ApiService) {
     suspend fun authenticate(username: String, password: String): LoginResponse {
         val response = apiService.login(username, password)
         if (response.isSuccessful) {
-            // Assuming that the login API returns a token inside the LoginResponse
-            return response.body() ?: throw AuthenticationException("Invalid login response")
+            response.body()?.let {
+                return it
+            } ?: throw Exception("Invalid login: No user data")
         } else {
-            throw ApiException("Network error: ${response.code()} - ${response.errorBody()?.string()}")
+            throw Exception("Network error: ${response.code()} - ${response.message()}")
         }
     }
 
