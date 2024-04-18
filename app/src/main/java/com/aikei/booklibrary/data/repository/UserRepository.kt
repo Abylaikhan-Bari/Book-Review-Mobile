@@ -6,12 +6,8 @@ import com.aikei.booklibrary.data.remote.ApiService
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(private val apiService: ApiService) {
-    suspend fun authenticate(username: String, password: String, token: String? = null): User {
-        val response = if (token != null) {
-            apiService.loginWithToken(username, password, "Bearer $token")
-        } else {
-            apiService.login(username, password)
-        }
+    suspend fun authenticate(username: String, password: String): User {
+        val response = apiService.login(username, password)
         if (response.isSuccessful) {
             return response.body() ?: throw Exception("Invalid login: No user data")
         } else {

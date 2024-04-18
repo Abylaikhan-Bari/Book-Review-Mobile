@@ -14,6 +14,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,11 +25,30 @@ import com.aikei.booklibrary.ui.feature.login.LoginViewModel
 @Composable
 fun LoginScreen(navController: NavController, token: String? = null) {
     val loginViewModel: LoginViewModel = hiltViewModel()
+    val loginState by loginViewModel.loginState.observeAsState()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     if (token != null) {
         loginViewModel.setToken(token)
+    }
+
+    when (loginState) {
+        is LoginViewModel.LoginState.Success -> {
+            // If login is successful, navigate to the book list and make sure to clear the login state
+            LaunchedEffect(loginState) {
+                navController.navigate("bookList")
+                loginViewModel.clearLoginState() // You need to implement this to reset the login state
+            }
+        }
+        is LoginViewModel.LoginState.Error -> {
+            val errorMessage = (loginState as LoginViewModel.LoginState.Error).message
+            // Show error message
+        }
+        else -> {
+
+        }
+        // Handle other states if necessary
     }
 
     Column(modifier = Modifier.padding(PaddingValues(16.dp))) {
@@ -36,8 +57,6 @@ fun LoginScreen(navController: NavController, token: String? = null) {
         OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(), label = { Text("Password") })
         Button(onClick = {
             loginViewModel.login(username, password)
-            // Navigate upon successful login
-            navController.navigate("bookList")
         },
             modifier = Modifier.fillMaxWidth()
         ) {
