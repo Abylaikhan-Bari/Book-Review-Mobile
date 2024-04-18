@@ -39,6 +39,14 @@ interface ApiService {
         @Body book: Book
     ): Response<Book>
 
+    @PUT("api/books/{id}/")
+    suspend fun updateBook(
+        @Header("Authorization") authHeader: String,
+        @Path("id") bookId: Int,
+        @Body book: Book
+    ): Response<Book>
+
+
     @DELETE("api/books/{id}/")
     suspend fun deleteBook(
         @Header("Authorization") authHeader: String,

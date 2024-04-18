@@ -1,5 +1,6 @@
 package com.aikei.booklibrary.ui.feature.bookdetail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aikei.booklibrary.data.Resource
@@ -24,4 +25,30 @@ class BookDetailViewModel @Inject constructor(private val repository: BookReposi
             _book.value = result
         }
     }
+    fun updateBook(token: String, book: Book) {
+        viewModelScope.launch {
+            Log.d("BookDetailVM", "Updating book with ID: ${book.id}")
+            val result = repository.updateBook("Bearer $token", book)
+            if (result is Resource.Success) {
+                Log.d("BookDetailVM", "Book updated successfully")
+                _book.value = Resource.Success(result.data)
+            } else if (result is Resource.Error) {
+                Log.e("BookDetailVM", "Failed to update book: ${result.message}")
+                _book.value = result
+            }
+        }
+    }
+
+    fun confirmDelete(book: Book, token: String) {
+        viewModelScope.launch {
+            Log.d("BookDetailVM", "Deleting book with ID: ${book.id}")
+            val result = repository.deleteBook("Bearer $token", book.id)
+            if (result is Resource.Success) {
+                Log.d("BookDetailVM", "Book deleted successfully")
+            } else if (result is Resource.Error) {
+                Log.e("BookDetailVM", "Failed to delete book: ${result.message}")
+            }
+        }
+    }
+
 }

@@ -37,17 +37,5 @@ class BookListViewModel @Inject constructor(private val repository: BookReposito
         }
     }
 
-    fun confirmDelete(book: Book, token: String) {
-        viewModelScope.launch {
-            Log.d("BookListVM", "Deleting book with ID: ${book.id}")
-            val result = repository.deleteBook("Bearer $token", book.id)
-            if (result is Resource.Success) {
-                Log.d("BookListVM", "Book deleted successfully")
-                loadBooks(token)  // Refresh the list or handle success
-            } else if (result is Resource.Error) {
-                Log.e("BookListVM", "Failed to delete book: ${result.message}")
-            }
-        }
-    }
 }
 
