@@ -72,13 +72,14 @@ fun RegistrationScreen(navController: NavController) {
             Text("Register")
         }
 
-        Button(onClick = { navController.navigate("login") }) {
+        Button(onClick = { navController.navigate("login") },
+            modifier = Modifier.fillMaxWidth()) {
             Text("Go to Login")
         }
 
         // Error message display
         if (!errorMessage.isNullOrEmpty()) {
-            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
+            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.fillMaxWidth())
         }
     }
 

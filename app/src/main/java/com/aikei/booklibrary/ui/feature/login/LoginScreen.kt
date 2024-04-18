@@ -29,24 +29,7 @@ fun LoginScreen(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    when (val state = loginState) {
-        is LoginViewModel.LoginState.Success -> {
-            LaunchedEffect(state) {
-                navController.navigate("bookList/${state.token}")
-            }
-        }
-        is LoginViewModel.LoginState.Error -> {
-            // Show error message if needed, assuming you have some text to show it
-            Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
-        }
-        is LoginViewModel.LoginState.Loading -> {
-            // Optionally show loading indicator
-            Text("Loading...", style = MaterialTheme.typography.bodyMedium)
-        }
-        null -> {
-            // No action needed or you can show default UI
-        }
-    }
+
 
     Column(modifier = Modifier.padding(PaddingValues(16.dp))) {
         Text(text = "Login", style = MaterialTheme.typography.headlineSmall)
@@ -75,5 +58,25 @@ fun LoginScreen(navController: NavController) {
         ) {
             Text("Go to Register")
         }
+
+        when (val state = loginState) {
+            is LoginViewModel.LoginState.Success -> {
+                LaunchedEffect(state) {
+                    navController.navigate("bookList/${state.token}")
+                }
+            }
+            is LoginViewModel.LoginState.Error -> {
+                // Show error message if needed, assuming you have some text to show it
+                Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error,modifier = Modifier.fillMaxWidth())
+            }
+            is LoginViewModel.LoginState.Loading -> {
+                // Optionally show loading indicator
+                Text("Loading...", style = MaterialTheme.typography.bodyMedium,modifier = Modifier.fillMaxWidth())
+            }
+            null -> {
+                // No action needed or you can show default UI
+            }
+        }
+
     }
 }
