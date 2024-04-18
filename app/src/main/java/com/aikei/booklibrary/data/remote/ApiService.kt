@@ -26,6 +26,7 @@ interface ApiService {
         @Header("Authorization") authHeader: String
     ): Response<List<Book>>
 
+
     @GET("api/books/{id}/")
     suspend fun getBookById(
         @Header("Authorization") authHeader: String,

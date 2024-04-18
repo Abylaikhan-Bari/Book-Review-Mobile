@@ -5,18 +5,12 @@ import com.aikei.booklibrary.data.model.RegistrationRequest
 import com.aikei.booklibrary.data.model.RegistrationResponse
 import com.aikei.booklibrary.data.model.User
 import com.aikei.booklibrary.data.remote.ApiService
+import retrofit2.Response
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(private val apiService: ApiService) {
-    suspend fun authenticate(username: String, password: String): LoginResponse {
-        val response = apiService.login(username, password)
-        if (response.isSuccessful) {
-            response.body()?.let {
-                return it
-            } ?: throw Exception("Invalid login: No user data")
-        } else {
-            throw Exception("Network error: ${response.code()} - ${response.message()}")
-        }
+    suspend fun authenticate(username: String, password: String): Response<LoginResponse> {
+        return apiService.login(username, password)
     }
 
     suspend fun register(username: String, email: String, password1: String, password2: String): RegistrationResponse {
