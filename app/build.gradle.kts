@@ -102,7 +102,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.wear.compose:compose-material:1.3.0")
-
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.23.1")
     // Image loading library for Compose
     implementation("io.coil-kt:coil-compose:2.4.0")
 

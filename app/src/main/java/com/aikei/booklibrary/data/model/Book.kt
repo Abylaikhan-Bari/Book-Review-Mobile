@@ -4,6 +4,5 @@ data class Book(
     val id: Int,
     val title: String,
     val author: String,
-    val synopsis: String,
-    val publishDate: String
+    val synopsis: String
 )

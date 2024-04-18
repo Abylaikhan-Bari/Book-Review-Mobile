@@ -11,16 +11,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.ui.feature.login.LoginViewModel
+import com.aikei.booklibrary.ui.theme.Custom
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -47,6 +51,7 @@ fun LoginScreen(navController: NavController) {
         )
         Button(
             onClick = { loginViewModel.login(username, password) },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
@@ -54,6 +59,7 @@ fun LoginScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { navController.navigate("register") },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Register")

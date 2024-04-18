@@ -30,4 +30,39 @@ class BookRepository @Inject constructor(private val apiService: ApiService) {
             Resource.Error(message = e.message ?: "Unknown error")
         }
     }
+
+    suspend fun addBook(token: String, book: Book): Resource<Book> {
+        val response = apiService.addBook("Bearer $token", book)
+        return if (response.isSuccessful) {
+            Resource.Success(data = response.body() ?: throw IllegalStateException("Failed to add the book"))
+        } else {
+            Resource.Error(message = "Failed to add book: ${response.errorBody()?.string()}")
+        }
+    }
+
+    suspend fun updateBook(token: String, book: Book): Resource<Book> {
+        return try {
+            val response = apiService.updateBook("Bearer $token", book.id, book)
+            if (response.isSuccessful) {
+                Resource.Success(data = response.body() ?: throw IllegalStateException("Failed to update the book"))
+            } else {
+                Resource.Error(message = "Failed to update book: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Resource.Error(message = "Exception during book update: ${e.message}")
+        }
+    }
+
+    suspend fun deleteBook(token: String, bookId: Int): Resource<Unit> {
+        return try {
+            val response = apiService.deleteBook("Bearer $token", bookId)
+            if (response.isSuccessful) {
+                Resource.Success(Unit)  // Successfully deleted the book
+            } else {
+                Resource.Error(message = "Failed to delete book: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Resource.Error(message = "Exception during book deletion: ${e.message}")
+        }
+    }
 }

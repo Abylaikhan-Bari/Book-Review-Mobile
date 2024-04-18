@@ -1,4 +1,4 @@
-package com.aikei.booklibrary.ui
+package com.aikei.booklibrary.ui.common
 
 import androidx.lifecycle.ViewModel
 import com.aikei.booklibrary.utils.SessionManager

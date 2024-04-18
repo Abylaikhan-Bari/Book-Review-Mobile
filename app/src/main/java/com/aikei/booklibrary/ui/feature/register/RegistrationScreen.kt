@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -16,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.ui.feature.booklist.BookListViewModel
+import com.aikei.booklibrary.ui.theme.Custom
 import kotlinx.coroutines.delay
 
 @Composable
@@ -69,6 +71,7 @@ fun RegistrationScreen(navController: NavController) {
                     registrationViewModel.register(username, email, password, confirmPassword)
                 }
             },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")
@@ -77,6 +80,7 @@ fun RegistrationScreen(navController: NavController) {
         // Go to Login button
         Button(
             onClick = { navController.navigate("login") },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Login")
