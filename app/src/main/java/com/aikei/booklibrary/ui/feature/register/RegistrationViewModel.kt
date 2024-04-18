@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
     private val _registrationState = MutableStateFlow<RegistrationState?>(null)
@@ -46,3 +45,4 @@ class RegistrationViewModel @Inject constructor(private val userRepository: User
         data class Error(val message: String) : RegistrationState()
     }
 }
+

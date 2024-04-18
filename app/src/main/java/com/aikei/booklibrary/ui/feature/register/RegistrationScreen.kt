@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.ui.feature.booklist.BookListViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
@@ -28,7 +29,7 @@ fun RegistrationScreen(navController: NavController) {
     var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    Column(modifier = Modifier.padding(PaddingValues(16.dp))) {
+    Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Register", style = MaterialTheme.typography.headlineSmall)
 
         // Input fields
@@ -59,6 +60,7 @@ fun RegistrationScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        // Register button
         Button(
             onClick = {
                 if (password != confirmPassword) {
@@ -72,29 +74,36 @@ fun RegistrationScreen(navController: NavController) {
             Text("Register")
         }
 
-        Button(onClick = { navController.navigate("login") },
-            modifier = Modifier.fillMaxWidth()) {
+        // Go to Login button
+        Button(
+            onClick = { navController.navigate("login") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Go to Login")
         }
 
         // Error message display
-        if (!errorMessage.isNullOrEmpty()) {
-            Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.fillMaxWidth())
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
-    }
 
-    // Handle navigation after successful registration
-    LaunchedEffect(registrationState) {
-        when (registrationState) {
-            is RegistrationViewModel.RegistrationState.Success -> {
-                navController.navigate("bookList/${(registrationState as RegistrationViewModel.RegistrationState.Success).token}") {
-                    popUpTo("bookList") { inclusive = true }
+        // Success message display
+        registrationState?.let {
+            if (it is RegistrationViewModel.RegistrationState.Success) {
+                Text(
+                    text = "Registration successful!",
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                LaunchedEffect(Unit) {
+                    delay(2000) // Delay for 2 seconds before navigating to login
+                    navController.navigate("login")
                 }
             }
-            is RegistrationViewModel.RegistrationState.Error -> {
-                errorMessage = (registrationState as RegistrationViewModel.RegistrationState.Error).message
-            }
-            else -> {}
         }
     }
 }
