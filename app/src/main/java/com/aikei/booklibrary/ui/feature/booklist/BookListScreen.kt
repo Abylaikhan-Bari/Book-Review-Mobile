@@ -1,5 +1,6 @@
 package com.aikei.booklibrary.ui.feature.booklist
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -80,7 +81,9 @@ fun BookListScreen(navController: NavController, token: String) {
                     is Resource.Loading -> Text("Loading...")
                     is Resource.Success -> BookList(
                         items = books.data ?: listOf(),
-                        onItemClick = { book -> navController.navigate("bookDetail/$token/${book.id}") },
+                        onItemClick = { book ->
+                            Log.d("BookListScreen", "Clicked on book: ${book.id}")
+                            navController.navigate("bookDetail/$token/${book.id}") },
                         onDeleteConfirm = { book -> bookListViewModel.confirmDelete(book, token) }
                     )
                     is Resource.Error -> Text("Error: ${books.message}")
@@ -104,6 +107,25 @@ fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: (B
 fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { showDialog = true }
+                )
+            }
+            .clickable { onItemClick(book) }, // Pass the book to onItemClick
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = BorderStroke(1.dp, Color.LightGray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Title: ${book.title}", style = MaterialTheme.typography.titleMedium)
+            Text("Author: ${book.author}", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -125,24 +147,5 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: (Book) ->
                 }
             }
         )
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClick = { onItemClick(book) }) // Pass the book to onItemClick
-            .pointerInput(Unit) { // This listens to pointer input and reacts to gestures
-                detectTapGestures(
-                    onLongPress = { showDialog = true } // This will show the dialog on long press
-                )
-            },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        border = BorderStroke(1.dp, Color.LightGray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Title: ${book.title}", style = MaterialTheme.typography.titleMedium)
-            Text("Author: ${book.author}", style = MaterialTheme.typography.bodyMedium)
-        }
     }
 }
