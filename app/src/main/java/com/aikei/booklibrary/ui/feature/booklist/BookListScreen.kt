@@ -2,6 +2,7 @@ package com.aikei.booklibrary.ui.feature.booklist
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -75,37 +78,69 @@ fun BookListScreen(navController: NavController, token: String) {
             ) {
                 when (val books = bookResource) {
                     is Resource.Loading -> Text("Loading...")
-                    is Resource.Success -> BookList(items = books.data ?: listOf(), onItemClick = { book ->
-                        navController.navigate("bookDetail/$token/${book.id}")
-                    })
+                    is Resource.Success -> BookList(
+                        items = books.data ?: listOf(),
+                        onItemClick = { book -> navController.navigate("bookDetail/$token/${book.id}") },
+                        onDeleteConfirm = { /* Handle delete confirmation here */ }
+                    )
                     is Resource.Error -> Text("Error: ${books.message}")
                 }
+
             }
         }
     }
 }
 
 @Composable
-fun BookList(items: List<Book>, onItemClick: (Book) -> Unit) {
+fun BookList(items: List<Book>, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Unit) {
     LazyColumn {
         items(items, key = { it.id }) { book ->
-            BookItem(book, onItemClick)
+            BookItem(book, onItemClick, onDeleteConfirm)
         }
     }
 }
 
+
+
 @Composable
-fun BookItem(book: Book, onItemClick: (Book) -> Unit) {
+fun BookItem(book: Book, onItemClick: (Book) -> Unit, onDeleteConfirm: () -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
-    // Logic for showing dialog and performing actions if needed
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Delete Book") },
+            text = { Text("Are you sure you want to delete '${book.title}'?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteConfirm() // This is called when the user confirms deletion
+                        showDialog = false
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick(book) }  // Pass book to the onItemClick function
-            .padding(vertical = 4.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(vertical = 8.dp)
+            .clickable(onClick = { onItemClick(book) }) // Pass the book to onItemClick
+            .pointerInput(Unit) { // This listens to pointer input and reacts to gestures
+                detectTapGestures(
+                    onLongPress = { showDialog = true } // This will show the dialog on long press
+                )
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Title: ${book.title}", style = MaterialTheme.typography.titleMedium)
@@ -113,3 +148,4 @@ fun BookItem(book: Book, onItemClick: (Book) -> Unit) {
         }
     }
 }
+
