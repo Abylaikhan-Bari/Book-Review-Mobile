@@ -1,5 +1,6 @@
 package com.aikei.booklibrary.ui.feature.booklist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aikei.booklibrary.data.Resource
@@ -19,9 +20,33 @@ class BookListViewModel @Inject constructor(private val repository: BookReposito
 
     fun loadBooks(token: String) {
         viewModelScope.launch {
-            _books.emit(Resource.Loading())
-            val result = repository.getBooks("Bearer $token") // Pass the token here
-            _books.emit(result)
+            try {
+                Log.d("BookListVM", "Loading books with token: $token")
+                _books.emit(Resource.Loading())
+                val result = repository.getBooks("Bearer $token")
+                _books.emit(result)
+                if (result is Resource.Success) {
+                    Log.d("BookListVM", "Books loaded: ${result.data.size}")
+                } else if (result is Resource.Error) {
+                    Log.d("BookListVM", "Error loading books: ${result.message}")
+                }
+            } catch (e: Exception) {
+                Log.e("BookListVM", "Failed to load books", e)
+                _books.emit(Resource.Error("Failed to load books: ${e.message}"))
+            }
+        }
+    }
+
+    fun confirmDelete(book: Book, token: String) {
+        viewModelScope.launch {
+            Log.d("BookListVM", "Deleting book with ID: ${book.id}")
+            val result = repository.deleteBook("Bearer $token", book.id)
+            if (result is Resource.Success) {
+                Log.d("BookListVM", "Book deleted successfully")
+                loadBooks(token)  // Refresh the list or handle success
+            } else if (result is Resource.Error) {
+                Log.e("BookListVM", "Failed to delete book: ${result.message}")
+            }
         }
     }
 }

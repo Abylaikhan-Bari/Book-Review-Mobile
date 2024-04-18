@@ -39,4 +39,17 @@ class BookRepository @Inject constructor(private val apiService: ApiService) {
             Resource.Error(message = "Failed to add book: ${response.errorBody()?.string()}")
         }
     }
+
+    suspend fun deleteBook(token: String, bookId: Int): Resource<Unit> {
+        return try {
+            val response = apiService.deleteBook("Bearer $token", bookId)
+            if (response.isSuccessful) {
+                Resource.Success(Unit)  // Successfully deleted the book
+            } else {
+                Resource.Error(message = "Failed to delete book: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            Resource.Error(message = "Exception during book deletion: ${e.message}")
+        }
+    }
 }
