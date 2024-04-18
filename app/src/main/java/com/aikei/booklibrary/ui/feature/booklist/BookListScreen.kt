@@ -69,7 +69,10 @@ fun BookListScreen(navController: NavController, token: String) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("addBook/$token") }) {
+            FloatingActionButton(onClick = { navController.navigate("addBook/$token") },
+                contentColor = MaterialTheme.colorScheme.primary
+
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Book")
             }
         },

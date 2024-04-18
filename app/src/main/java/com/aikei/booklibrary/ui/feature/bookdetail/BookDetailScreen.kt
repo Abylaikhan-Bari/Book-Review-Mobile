@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.data.model.Book
+import com.aikei.booklibrary.ui.theme.Custom
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,12 +48,14 @@ fun BookDetailScreen(navController: NavController, token: String, bookId: String
                     BookDetailCard(book)
                     Button(
                         onClick = { showUpdateDialog = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Custom),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Update Book")
                     }
                     Button(
                         onClick = { showDeleteDialog = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Custom),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Delete Book")
@@ -82,6 +86,7 @@ fun BookDetailScreen(navController: NavController, token: String, bookId: String
 
         Button(
             onClick = { navController.navigate("bookList/$token") },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Book List Screen")

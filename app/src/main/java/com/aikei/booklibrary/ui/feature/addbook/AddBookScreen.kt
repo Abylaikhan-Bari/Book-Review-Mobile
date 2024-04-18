@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aikei.booklibrary.data.Resource
 import com.aikei.booklibrary.ui.common.MainViewModel
+import com.aikei.booklibrary.ui.theme.Custom
 
 @Composable
 fun AddBookScreen(navController: NavController, token: String) {
@@ -85,12 +87,14 @@ fun AddBookScreen(navController: NavController, token: String) {
                     errorMessage = "Please fill all fields."
                 }
             },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Add Book")
         }
         Button(
             onClick = { navController.navigate("bookList/{token}") },
+            colors = ButtonDefaults.buttonColors(containerColor = Custom),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Book list screen")
